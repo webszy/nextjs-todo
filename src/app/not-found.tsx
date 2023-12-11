@@ -4,6 +4,7 @@ import '../styles/not-found.css'
 import {Search} from '@mui/icons-material'
 import Link from 'next/link'
 import {useEffect} from "react";
+import {useRouter} from "next/navigation";
 
 const robot = Roboto({
     weight: ['400', '300', '700', '900'],
@@ -11,7 +12,16 @@ const robot = Roboto({
     subsets: ['latin']
 })
 export default function NotFound() {
-    useEffect(load)
+    let resetAnimation = null
+    const router = useRouter()
+    useEffect(()=>{
+        resetAnimation = load()
+    })
+    const leave = ()=>{
+        resetAnimation()
+        resetAnimation = null
+        return router.replace('/')
+    }
     return (
         <div className={`${robot.className} page404 w-screen h-screen`}>
             <div className="page">
@@ -25,7 +35,7 @@ export default function NotFound() {
                     <h1>404</h1>
                     <h2>Page not found</h2>
                     <p>I tried to catch some fog, but i mist</p>
-                    <Link href='/'>back to home</Link>
+                    <button onClick={leave}>back to home</button>
                 </div>
                 <img alt='not found' src="/bg404.jpeg" />
             </div>
@@ -58,4 +68,9 @@ function load() {
     page.addEventListener('mousemove', getPosition)
     page.addEventListener('click', getPosition)
     animate()
+    function reset(){
+        page.removeEventListener('mousemove', getPosition)
+        page.removeEventListener('click', getPosition)
+    }
+    return reset
 }
